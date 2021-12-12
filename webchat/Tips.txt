@@ -1,0 +1,5 @@
+php artisan migrate:fresh
+
+Compile laravel jetstream:
+npm ci && npm run dev
+
