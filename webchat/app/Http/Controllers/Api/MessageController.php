@@ -1,4 +1,4 @@
-<?php
+ <?php
 
 namespace App\Http\Controllers\Api;
 
@@ -23,6 +23,7 @@ class MessageController extends Controller
          * OR
          * [from = $userTo && to = $userFrom]
          */
+        
         $messages = Message::where(
             function ($query) use ($userFrom, $userTo) {
                 $query->where([

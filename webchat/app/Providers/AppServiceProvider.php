@@ -28,8 +28,8 @@ class AppServiceProvider extends ServiceProvider
     {
         Schema::defaultStringLength(191);
 
-        Inertia::share('auth.user', function(){
-            return Auth::user();
-        });
+        // Inertia::share('auth.user', function(){
+        //     return Auth::user();
+        // });
     }
 }
