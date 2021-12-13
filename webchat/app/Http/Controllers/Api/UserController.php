@@ -18,4 +18,8 @@ class UserController extends Controller
 
         return response()->json(['users' => $users], Response::HTTP_OK);
     }
+
+    public function show(User $user) {
+        return response()->json(['user' => $user], Response::HTTP_OK);
+    }
 }
