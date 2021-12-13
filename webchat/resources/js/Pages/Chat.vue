@@ -64,6 +64,7 @@
 
 <script>
     import AppLayout from '@/Layouts/AppLayout'
+    import store from '../store'
 
     export default {
         components: {
@@ -75,6 +76,11 @@
                 messages: [],
                 userActive: null,
                 message: ''
+            }
+        },
+        computed: {
+            user() {
+                return store.state.user;
             }
         },
         methods: {
@@ -100,7 +106,7 @@
                     'to': this.userActive.id
                 }).then(response => {
                     this.messages.push({
-                        'from': '1',
+                        'from': this.user.id,
                         'to': this.userActive.id,
                         'content': this.message,
                         'created_at': new Date().toISOString(),
