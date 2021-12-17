@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Web\PageController;
 use Illuminate\Support\Facades\Route;
 

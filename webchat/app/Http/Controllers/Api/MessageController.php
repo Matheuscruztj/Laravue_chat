@@ -1,4 +1,4 @@
- <?php
+<?php
 
 namespace App\Http\Controllers\Api;
 
@@ -69,7 +69,7 @@ class MessageController extends Controller
         $message->content = filter_var($request->content, FILTER_SANITIZE_STRIPPED);
         $message->save();
 
-        // Event::dispatch(new SendMessage($message, $request->to));
+        Event::dispatch(new SendMessage($message, $request->to));
     }
 
     /**

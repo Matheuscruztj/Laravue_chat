@@ -20,7 +20,7 @@
                                 class="p-6 text-lg text-gray-600 leading-7 font-semibold border-b border-gray-200 hover:bg-gray-200 hover:bg-opacity-50 hover:cursor-pointer">
                                 <p class="flex items-center">
                                     {{ user.name }}
-                                    <span class="ml-2 w-2 h-2 bg-blue-500 rounded-full"></span>
+                                    <span v-if="user.notification" class="ml-2 w-2 h-2 bg-blue-500 rounded-full"></span>
                                 </p>
                             </li>
                         </ul>
@@ -50,7 +50,7 @@
                             class="w-full bg-gray-200 bg-opacity-25 p-6 border-t border-gray-200">
                             <form v-on:submit.prevent="sendMessage">
                                 <div class="flex rounded-md border border-gray-300">
-                                    <input v-moded="message" type="text" class="flex-1 px-4 py-2 text-sm focus:outline-none">
+                                    <input v-model="message" type="text" class="flex-1 px-4 py-2 text-sm focus:outline-none">
                                     <button type="submit" class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2">Enviar</button>
                                 </div>
                             </form>
@@ -63,8 +63,9 @@
 </template>
 
 <script>
-    import AppLayout from '@/Layouts/AppLayout'
-    import store from '../store'
+    import Vue from 'vue';
+    import AppLayout from '@/Layouts/AppLayout';
+    import store from '../store';
 
     export default {
         components: {
@@ -80,7 +81,7 @@
         },
         computed: {
             user() {
-                return store.state.user;
+                return store.state.user
             }
         },
         methods: {
@@ -89,14 +90,24 @@
                     document.querySelectorAll('.message:last-child')[0].scrollIntoView();
                 }
             },
-            loadMessages: function(userId) {
-                axios.get(`api/users/${userId}`).then(response => {
+            loadMessages: async function(userId) {
+                await axios.get(`api/users/${userId}`).then(response => {
                     this.userActive = response.data.user;           
                 })
 
-                axios.get(`api/messages/${userId}`).then(response => {
+                await axios.get(`api/messages/${userId}`).then(response => {
                     this.messages = response.data.messages;
                 })
+
+                const user = this.users.filter((user) => {
+                    if(user.id === userId) {
+                        return user;
+                    }
+                })
+
+                if(user) {
+                    Vue.set(user[0], 'notification', false);
+                }
 
                 this.scrollToBottom();
             },
@@ -122,6 +133,23 @@
         mounted() {
             axios.get('api/users').then(response => {
                 this.users = response.data.users
+            })
+
+            Echo.private(`user.${this.user.id}`).listen('.SendMessage', async (e) => {
+                if(this.userActive && this.userActive.id === e.message.from) {
+                    await this.messages.push(e.message);
+                    this.scrollToBottom();
+                } else {
+                    const user = this.users.filter((user) => {
+                        if(user.id === e.message.from) {
+                            return user;
+                        }
+                    })
+
+                    if(user) {
+                        Vue.set(user[0], 'notification', true);
+                    }
+                }
             })
         }
     }
